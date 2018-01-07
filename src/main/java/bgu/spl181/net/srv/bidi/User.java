@@ -9,7 +9,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
-
+    private int id;
     @SerializedName("username")
     @Expose
     private String username;
@@ -54,6 +54,7 @@ public class User {
         this.country = country;
         this.movies = movies;
         this.balance = balance;
+        id = -1;
     }
 
 
@@ -112,5 +113,12 @@ public class User {
     public void setLoggedIn(boolean loggedIn) {
         this.isLoggedIn = loggedIn;
     }
+
+    public void setID(int ID) {
+        this.id = ID;
+    }
+
+    public int getID() { return id; }
+
 
 }

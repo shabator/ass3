@@ -57,7 +57,6 @@ import java.util.List;
             this.name = name;
         }
 
-
         public String getId() {
             return id;
         }

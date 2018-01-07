@@ -1,6 +1,7 @@
 package bgu.spl181.net.srv.bidi;
 
 import bgu.spl181.net.api.bidi.Connections;
+import bgu.spl181.net.api.bidi.ConnectionsImpl;
 import bgu.spl181.net.srv.BBSharedData;
 //import com.google.gson.Gson;
 //import com.google.gson.JsonObject;
@@ -8,16 +9,14 @@ import bgu.spl181.net.srv.BBSharedData;
 //
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlockBusterProtocol extends USTBP {
 
     //    private HashMap<String, AtomicBoolean> users;
     private int connID;
-    private Connections connection;
+    private ConnectionsImpl connections;
     private BBSharedData sharedData;
     private boolean isLogin = false;
     private User thisUser;
@@ -28,9 +27,9 @@ public class BlockBusterProtocol extends USTBP {
     }
 
     @Override
-    public void start(int connectionId, Connections connections) {
+    public void start(int connectionId, Connections newConnections) {
         connID = connectionId;
-        connection = connections;
+        connections = (ConnectionsImpl) newConnections;
     }
 
     @Override
@@ -48,12 +47,12 @@ public class BlockBusterProtocol extends USTBP {
         String ans;
         if (isLogin) {   // client already logged in
             ans = "Login failed";
-            connection.send(connID, ans);
+            connections.send(connID, ans);
             return;
 
         } else if (!sharedData.getUsers().contains(userName)) {  // the user not exists
             ans = "Login failed";
-            connection.send(connID, ans);
+            connections.send(connID, ans);
             return;
         }
 
@@ -67,9 +66,10 @@ public class BlockBusterProtocol extends USTBP {
             thisUser.setLoggedIn(true);
             ans = "Login succeeded";
             isLogin = true;
+            thisUser.setID(connID);
         }
 
-        connection.send(connID, ans);
+        connections.send(connID, ans);
 
     }
 
@@ -80,11 +80,11 @@ public class BlockBusterProtocol extends USTBP {
             thisUser.setLoggedIn(false);
             isLogin = false;
             ans = "signout succeeded";
-            connection.send(connID, ans);
-
+            thisUser.setID(-1);
+            connections.send(connID, ans);
         }
         ans = "signout failed";
-        connection.send(connID, ans);
+        connections.send(connID, ans);
 
     }
 
@@ -103,30 +103,65 @@ public class BlockBusterProtocol extends USTBP {
             ans = "registration succeeded";
             sharedData.getUsers().put(userName, new User(userName, "Normal", password, country, new ArrayList<>(), 0));
         }
-        connection.send(connID, ans);
+        connections.send(connID, ans);
 
     }
 
     public void balanceInfo() {
+        if(!thisUser.isLoggedIn()){
+            String ans = "request balance failed";
+            error(ans);}
         int balance = thisUser.getBalance();
-        String ans = "ACK balance" + balance;
-        connection.send(connID, ans);
+        String ans = "balance " + balance;
+        ack(ans);
+        }
 
-    }
+     public void balanceAdd(int amount){
+         if(!thisUser.isLoggedIn()){
+             String ans = "request balance failed";
+             error(ans);}
+        thisUser.setBalance(thisUser.getBalance() + amount);
+        String ans = "balance " + thisUser.getBalance() + " added " +amount;
+        ack(ans);
+     }
+     public void info(String movieName)
+     {
+         String ans = "";
+         if(movieName==null) {
+             for(String movie : (Set<String>)sharedData.getMovies().keySet())
+             {
+                 ans = ans + " " +'"' + movie + '"';
+             }
+             ack("info"+ans);
+         }
+         else
+         {
+            Movie movie = (Movie)sharedData.getMovies().get(movieName);
+            if(movie == null) {
+                error("Movie does not exists");
+                return;
+            }
+            ack("info " + movie.getName() + " " + movie.getAvailableAmount() + " " + movie.getPrice() + " " + movie.getBannedCountries().toString()); // look if u can to string it!!!
+         }
+     }
 
     private void ack(String ans){
-        connection.send(connID, "ACK " +ans);
+        connections.send(connID, "ACK " +ans);
 
     }
 
     private void error(String ans){
-        connection.send(connID, "ERROR " +ans);
+        connections.send(connID, "ERROR " +ans);
 
     }
 
     private void broadcast(String ans){
-        connection.send(connID, "BROADCAST " +ans);
-
+        Collection<User> users= sharedData.getUsers().values();
+        for(User user : users)
+        {
+        if(user.isLoggedIn() && user.getID()!= -1)
+            connections.send(user.getID(), "BROADCAST "+ans);
+        }
     }
 
 }

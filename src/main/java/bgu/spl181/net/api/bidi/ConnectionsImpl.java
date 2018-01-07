@@ -27,4 +27,7 @@ public class ConnectionsImpl<T> implements Connections<T>{
     {
         connections.put(ID, handler);
     }
+    public ConcurrentHashMap<Integer, ConnectionHandler> get(){
+        return connections;
+    }
 }
