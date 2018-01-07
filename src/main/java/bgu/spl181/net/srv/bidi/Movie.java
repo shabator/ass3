@@ -21,10 +21,10 @@ import java.util.List;
         private List<String> bannedCountries = null;
         @SerializedName("availableAmount")
         @Expose
-        private String availableAmount;
+        private int availableAmount;
         @SerializedName("totalAmount")
         @Expose
-        private String totalAmount;
+        private int totalAmount;
 
         /**
          * No args constructor for use in serialization
@@ -42,7 +42,7 @@ import java.util.List;
          * @param totalAmount
          * @param bannedCountries
          */
-        public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount) {
+        public Movie(String id, String name, String price, List<String> bannedCountries, int availableAmount, int totalAmount) {
             super();
             this.id = id;
             this.name = name;
@@ -90,19 +90,19 @@ import java.util.List;
             this.bannedCountries = bannedCountries;
         }
 
-        public String getAvailableAmount() {
+        public int getAvailableAmount() {
             return availableAmount;
         }
 
-        public void setAvailableAmount(String availableAmount) {
+        public void setAvailableAmount(int availableAmount) {
             this.availableAmount = availableAmount;
         }
 
-        public String getTotalAmount() {
+        public int getTotalAmount() {
             return totalAmount;
         }
 
-        public void setTotalAmount(String totalAmount) {
+        public void setTotalAmount(int totalAmount) {
             this.totalAmount = totalAmount;
         }
 

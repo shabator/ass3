@@ -12,7 +12,7 @@ public class ConnectionsImpl<T> implements Connections<T>{
         if(!connections.contains(connectionId))
             return false;
         connections.get(connectionId).send(msg);
-        return true;
+            return true;
     }
 
     public void broadcast(T msg){

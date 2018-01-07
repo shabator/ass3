@@ -27,7 +27,7 @@ public class User {
     private List<Movie> movies = null;
     @SerializedName("balance")
     @Expose
-    private String balance;
+    private int balance;
     private boolean isLoggedIn= false;
 
     /**
@@ -46,7 +46,7 @@ public class User {
      * @param password
      * @param country
      */
-    public User(String username, String type, String password, String country, List<Movie> movies, String balance) {
+    public User(String username, String type, String password, String country, List<Movie> movies, int balance) {
         super();
         this.username = username;
         this.type = type;
@@ -55,6 +55,7 @@ public class User {
         this.movies = movies;
         this.balance = balance;
     }
+
 
     public String getUsername() {
         return username;
@@ -96,11 +97,11 @@ public class User {
         this.movies = movies;
     }
 
-    public String getBalance() {
+    public int getBalance() {
         return balance;
     }
 
-    public void setBalance(String balance) {
+    public void setBalance(int balance) {
         this.balance = balance;
     }
 
