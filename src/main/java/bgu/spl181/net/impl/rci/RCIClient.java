@@ -1,10 +1,6 @@
 package bgu.spl181.net.impl.rci;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.Socket;
 
 public class RCIClient implements Closeable {

@@ -1,6 +1,7 @@
 package bgu.spl181.net.impl.newsfeed;
 
 import bgu.spl181.net.impl.rci.Command;
+
 import java.io.Serializable;
 
 public class PublishNewsCommand implements Command<NewsFeed> {

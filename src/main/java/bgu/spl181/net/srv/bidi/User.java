@@ -2,14 +2,13 @@
 package bgu.spl181.net.srv.bidi;
 
 
-import java.util.List;
-
-import bgu.spl181.net.srv.bidi.Movie;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class User {
-    private int id;
+
     @SerializedName("username")
     @Expose
     private String username;
@@ -24,11 +23,12 @@ public class User {
     private String country;
     @SerializedName("movies")
     @Expose
-    private List<Movie> movies = null;
+    private List<MovieUser> movies = null;
     @SerializedName("balance")
     @Expose
-    private int balance;
+    private String balance;
     private boolean isLoggedIn= false;
+    private int id;
 
     /**
      * No args constructor for use in serialization
@@ -46,7 +46,7 @@ public class User {
      * @param password
      * @param country
      */
-    public User(String username, String type, String password, String country, List<Movie> movies, int balance) {
+    public User(String username, String type, String password, String country, List<MovieUser> movies, int balance) {
         super();
         this.username = username;
         this.type = type;
@@ -90,19 +90,19 @@ public class User {
         this.country = country;
     }
 
-    public List<Movie> getMovies() {
+    public List<MovieUser> getMovies() {
         return movies;
     }
 
-    public void setMovies(List<Movie> movies) {
+    public void setMovies(List<MovieUser> movies) {
         this.movies = movies;
     }
 
-    public int getBalance() {
+    public String getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(String balance) {
         this.balance = balance;
     }
 

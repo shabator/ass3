@@ -6,7 +6,6 @@
 package bgu.spl181.net.srv.bidi;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 /**
  *

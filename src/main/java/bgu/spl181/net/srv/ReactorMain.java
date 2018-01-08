@@ -1,21 +1,21 @@
 package bgu.spl181.net.srv;
 
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
 import bgu.spl181.net.srv.bidi.Movie;
 import bgu.spl181.net.srv.bidi.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
 
 public class ReactorMain {
     public static void main(String args[]) {
         JsonReader reader = null;
         JsonReader reader2 = null;
-        BBSharedData sharedData = new BBSharedData();
+        BBUsers sharedData = new BBUsers();
 
         try {
             reader = new JsonReader(new FileReader(args[0]));

@@ -1,30 +1,22 @@
 package bgu.spl181.net.srv.bidi;
-//package com.example;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+
 
 import java.util.List;
 
     public class Movie {
 
-        @SerializedName("id")
-        @Expose
+
         private String id;
-        @SerializedName("name")
-        @Expose
+
         private String name;
-        @SerializedName("price")
-        @Expose
+
         private String price;
-        @SerializedName("bannedCountries")
-        @Expose
+
         private List<String> bannedCountries = null;
-        @SerializedName("availableAmount")
-        @Expose
-        private int availableAmount;
-        @SerializedName("totalAmount")
-        @Expose
-        private int totalAmount;
+
+        private String availableAmount;
+
+        private String totalAmount;
 
         /**
          * No args constructor for use in serialization
@@ -42,7 +34,7 @@ import java.util.List;
          * @param totalAmount
          * @param bannedCountries
          */
-        public Movie(String id, String name, String price, List<String> bannedCountries, int availableAmount, int totalAmount) {
+        public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount) {
             super();
             this.id = id;
             this.name = name;
@@ -50,12 +42,9 @@ import java.util.List;
             this.bannedCountries = bannedCountries;
             this.availableAmount = availableAmount;
             this.totalAmount = totalAmount;
+
         }
-        public Movie(String id, String name) {
-            super();
-            this.id = id;
-            this.name = name;
-        }
+
 
         public String getId() {
             return id;
@@ -89,19 +78,19 @@ import java.util.List;
             this.bannedCountries = bannedCountries;
         }
 
-        public int getAvailableAmount() {
+        public String getAvailableAmount() {
             return availableAmount;
         }
 
-        public void setAvailableAmount(int availableAmount) {
+        public void setAvailableAmount(String availableAmount) {
             this.availableAmount = availableAmount;
         }
 
-        public int getTotalAmount() {
+        public String getTotalAmount() {
             return totalAmount;
         }
 
-        public void setTotalAmount(int totalAmount) {
+        public void setTotalAmount(String totalAmount) {
             this.totalAmount = totalAmount;
         }
 
