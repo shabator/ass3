@@ -3,6 +3,7 @@ package bgu.spl181.net.srv;
 import bgu.spl181.net.api.MessageEncoderDecoder;
 import bgu.spl181.net.api.MessagingProtocol;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
+import bgu.spl181.net.srv.bidi.BlockBusterProtocol;
 
 import java.io.Closeable;
 import java.util.function.Supplier;
@@ -16,16 +17,16 @@ public interface Server<T> extends Closeable {
 
     /**
      *This function returns a new instance of a thread per client pattern server
+     * @param <T> The Message Object for the protocol
      * @param port The port for the server socket
      * @param protocolFactory A factory that creats new MessagingProtocols
      * @param encoderDecoderFactory A factory that creats new MessageEncoderDecoder
-     * @param <T> The Message Object for the protocol
      * @return A new Thread per client server
      */
     public static <T> Server<T>  threadPerClient(
             int port,
-            Supplier<BidiMessagingProtocol<T>> protocolFactory,
-            Supplier<MessageEncoderDecoder<T> > encoderDecoderFactory) {
+            Supplier<BlockBusterProtocol> protocolFactory,
+            Supplier<MessageEncoderDecoderImpl> encoderDecoderFactory) {
 
         return new BaseServer<T>(port, protocolFactory, encoderDecoderFactory) {
             @Override

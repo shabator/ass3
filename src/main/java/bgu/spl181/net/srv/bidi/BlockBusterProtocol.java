@@ -106,7 +106,7 @@ public class BlockBusterProtocol extends USTBP {
         else {
             ans = "registration succeeded";
             String ActualCountry = country.substring(8);
-            sharedData.getUsers().put(userName, new User(userName, "Normal", password, country, new ArrayList<>(), 0));
+            sharedData.getUsers().put(userName, new User(userName, "Normal", password, ActualCountry, new ArrayList<>(), 0));
         }
         connections.send(connID, ans);
 
@@ -231,12 +231,12 @@ public class BlockBusterProtocol extends USTBP {
         Integer id = sharedData.getMovies().size()+1;
         String [] Countries= blockData.split(" ") ;
         ArrayList<String> bannedCountries = new ArrayList<String>();
-        for()
+//        for()
+//
+//
+//        Movie movie = new Movie(id.toString(), movieName, price, bannedCountries, amount, amount);
 
-
-        Movie movie = new Movie(id.toString(), movieName, price, bannedCountries, amount, amount);
-
-        sharedData.getMovies()
+//        sharedData.getMovies()
     }
 
         private void ack(String ans) {
