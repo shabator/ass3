@@ -12,7 +12,7 @@ import java.util.List;
 
         private String price;
 
-        private List<String> bannedCountries = null;
+        private String [] bannedCountries = null;
 
         private String availableAmount;
 
@@ -34,7 +34,7 @@ import java.util.List;
          * @param totalAmount
          * @param bannedCountries
          */
-        public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount) {
+        public Movie(String id, String name, String price, String [] bannedCountries, String availableAmount, String totalAmount) {
             super();
             this.id = id;
             this.name = name;
@@ -70,11 +70,11 @@ import java.util.List;
             this.price = price;
         }
 
-        public List<String> getBannedCountries() {
+        public String[] getBannedCountries() {
             return bannedCountries;
         }
 
-        public void setBannedCountries(List<String> bannedCountries) {
+        public void setBannedCountries(String[] bannedCountries) {
             this.bannedCountries = bannedCountries;
         }
 

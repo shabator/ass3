@@ -22,10 +22,10 @@ public class TPCMain {
         int port = Integer.parseInt(args[0]);
         JsonReader reader = null;
         JsonReader reader2 = null;
-        Server<String > tpcServer;
+        Server<String> tpcServer;
         try {
-            reader = new JsonReader(new FileReader(args[0]));
-            reader2 = new JsonReader(new FileReader(args[1]));
+            reader = new JsonReader(new FileReader("Movies.json"));
+            reader2 = new JsonReader(new FileReader("Users.json"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -38,45 +38,21 @@ public class TPCMain {
         ConcurrentHashMap<String, User> hashUsers = new ConcurrentHashMap<>();
         ConcurrentHashMap<String, Movie> hashMovies = new ConcurrentHashMap<>();
 
-        for(Movie movie : movies) {
-            hashMovies.put(movie.getId(),movie);
+        for (Movie movie : movies) {
+            hashMovies.put(movie.getId(), movie);
         }
 
-        for(User user : users) {
-            hashUsers.put(user.getUsername(),user);
+        for (User user : users) {
+            hashUsers.put(user.getUsername(), user);
         }
 
         BBMovies sharedData = new BBMovies(hashMovies, hashUsers);
-//        BlockBusterProtocol BBprotocol = new BlockBusterProtocol(sharedData);
 
+        tpcServer = Server.threadPerClient(port,
+                ()->{return new BlockBusterProtocol(sharedData);},
+                ()->{return new MessageEncoderDecoderImpl();});
+        tpcServer.serve();
 
-
-        BlockBusterProtocol BB = new BidiMessagingProtocol;
-        Supplier<BlockBusterProtocol> s = new Supplier<BlockBusterProtocol>() {
-            @Override
-            public BlockBusterProtocol get() {
-                return new BlockBusterProtocol(sharedData);
-            }
-        };
-
-
-        Supplier<MessageEncoderDecoderImpl> s2 = new Supplier<MessageEncoderDecoderImpl>() {
-            @Override
-            public MessageEncoderDecoderImpl get() {
-                return new MessageEncoderDecoderImpl();
-            }
-        };
-
-        tpcServer = Server.threadPerClient(port, s, s2);
-
-
-
-
-//                ()-> { return new BlockBusterProtocol(sharedData);},
-//                ()-> {return new MessageEncoderDecoderImpl();}
-//        );
-//        tpcServer.serve();
 
     }
-
 }

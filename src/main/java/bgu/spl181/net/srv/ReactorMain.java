@@ -15,7 +15,7 @@ public class ReactorMain {
     public static void main(String args[]) {
         JsonReader reader = null;
         JsonReader reader2 = null;
-        BBUsers sharedData = new BBUsers();
+//        BBUsers sharedData = new BBUsers();
 
         try {
             reader = new JsonReader(new FileReader(args[0]));

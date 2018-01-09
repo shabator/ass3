@@ -46,9 +46,11 @@ public abstract class BaseServer<T> implements Server<T> {
                         encdecFactory.get(),
                         protocolFactory.get());
 
-                execute(handler);
-                connections.add(current, handler);
                 current++;
+                connections.add(current, handler);
+                BidiMessagingProtocol BMP = protocolFactory.get();
+                BMP.start(current,connections);
+                execute(handler);
             }
         } catch (IOException ex) {
         }

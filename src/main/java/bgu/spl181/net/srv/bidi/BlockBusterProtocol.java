@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import static sun.management.Agent.error;
+
 //import com.google.gson.Gson;
 //import com.google.gson.JsonObject;
 //import com.google.gson.stream.JsonReader;
@@ -101,12 +103,12 @@ public class BlockBusterProtocol extends USTBP {
             ans = "registration failed";
         else if (isLogin)//already logged in
             ans = "registration failed";
-        else if(!country.substring(0,6).equals("country"))
+        else if (!country.substring(0, 6).equals("country"))
             ans = "registration failed";
         else {
             ans = "registration succeeded";
             String ActualCountry = country.substring(8);
-            sharedData.getUsers().put(userName, new User(userName, "Normal", password, ActualCountry, new ArrayList<>(), 0));
+            sharedData.getUsers().put(userName, new User(userName, "Normal", password, ActualCountry, new ArrayList<>(), "0"));
         }
         connections.send(connID, ans);
 
@@ -172,10 +174,12 @@ public class BlockBusterProtocol extends USTBP {
             error("The user does not have enough money in their balance");
             return;
         }
-
-        if (movie.getBannedCountries().contains(thisUser.getCountry())) {
-            error("The movie is banned in the user’s country");
-            return;
+        String [] Countries = movie.getBannedCountries();
+        for(int i=0; i<Countries.length; i++){
+            if (Countries[i].equals(thisUser.getCountry())) {
+                error("The movie is banned in the user’s country");
+                return;
+            }
         }
 
         thisUser.getMovies().add(new MovieUser(movie.getId(), movie.getName()));
@@ -183,11 +187,11 @@ public class BlockBusterProtocol extends USTBP {
         Integer newBalance = Integer.parseInt(thisUser.getBalance()) - Integer.parseInt(movie.getPrice());
         thisUser.setBalance(newBalance.toString());
 
-        Integer newAmount= Integer.parseInt(movie.getAvailableAmount()) -1 ;
+        Integer newAmount = Integer.parseInt(movie.getAvailableAmount()) - 1;
         movie.setAvailableAmount(newAmount.toString());
 
-        ack("rent " +  '"' + movieName + '"' + " success" );
-        broadcast("movie " +  '"' + movieName + '"' + " " + movie.getAvailableAmount() + " " + movie.getPrice());
+        ack("rent " + '"' + movieName + '"' + " success");
+        broadcast("movie " + '"' + movieName + '"' + " " + movie.getAvailableAmount() + " " + movie.getPrice());
     }
 
     public void returnMovie(String movieName) {
@@ -200,10 +204,10 @@ public class BlockBusterProtocol extends USTBP {
         for (MovieUser current : thisUser.getMovies()) {
             if (current.getName() == movieName) {
                 thisUser.getMovies().remove(current);
-                Integer newAmount= Integer.parseInt(movie.getAvailableAmount()) + 1 ;
+                Integer newAmount = Integer.parseInt(movie.getAvailableAmount()) + 1;
                 movie.setAvailableAmount(newAmount.toString());
-                ack("return " +  '"' + movieName + '"' + " success" );
-                broadcast("movie " +  '"' + movieName + '"' + " " + movie.getAvailableAmount() + " " + movie.getPrice());
+                ack("return " + '"' + movieName + '"' + " success");
+                broadcast("movie " + '"' + movieName + '"' + " " + movie.getAvailableAmount() + " " + movie.getPrice());
                 return;
             }
         }
@@ -211,35 +215,72 @@ public class BlockBusterProtocol extends USTBP {
 
     }
 
-    public void addMovie(String movieName, String amount, String price, String blockData)
-    {
-        if(!thisUser.getType().equals("admin"))
-        {
+    public void addMovie(String movieName, String amount, String price, String blockData) {
+        if (!thisUser.getType().equals("admin")) {
             error("User is not an administrator");
             return;
         }
-        if(sharedData.getMovies().contains(movieName))
-        {
-            error("Movie name already exists in the system" );
+        if (sharedData.getMovies().contains(movieName)) {
+            error("Movie name already exists in the system");
             return;
         }
-        if(Integer.parseInt(amount)<=0 || Integer.parseInt(price)<=0)
-        {
+        if (Integer.parseInt(amount) <= 0 || Integer.parseInt(price) <= 0) {
             error("Price or Amount are smaller than or equal to 0");
             return;
         }
-        Integer id = sharedData.getMovies().size()+1;
-        String [] Countries= blockData.split(" ") ;
-        ArrayList<String> bannedCountries = new ArrayList<String>();
-//        for()
-//
-//
-//        Movie movie = new Movie(id.toString(), movieName, price, bannedCountries, amount, amount);
-
-//        sharedData.getMovies()
+        Integer id = sharedData.getMovies().size() + 1;
+        String[] Countries = blockData.split(" ");
+        Movie movie = new Movie(id.toString(), movieName, price, Countries, amount, amount);
+        sharedData.getMovies().put(movie.getName(), movie);
+        ack("addmovie " + '"' + movieName + '"' + " success");
+        broadcast("movie " + '"' + movieName + '"' + " " + movie.getAvailableAmount() + " " + movie.getPrice());
     }
 
-        private void ack(String ans) {
+
+    public void remmovie(String movieName) {
+        if (!thisUser.getType().equals("admin")) {
+            error("User is not an administrator");
+            return;
+        }
+        if (!sharedData.getMovies().contains(movieName)) {
+            error("Movie name already exists in the system");
+            return;
+
+        }
+        Collection<User> users = sharedData.getUsers().values();
+        for (User user : users) {
+            if (user.getMovies().contains(movieName)) {
+                error("A copy of the movie is currently rented by a user");
+                return;
+            }
+        }
+        sharedData.getMovies().remove(movieName);
+        ack("remmovie " + '"' + movieName + '"' + " success");
+        broadcast("movie " + '"' + movieName + '"' + " removed");
+
+    }
+
+    public void changeprice(String movieName, String price) {
+        if (!thisUser.getType().equals("admin")) {
+            error("User is not an administrator");
+            return;
+        }
+        if (!sharedData.getMovies().contains(movieName)) {
+            error("Movie name already exists in the system");
+            return;
+
+        }
+        if (Integer.parseInt(price) <= 0) {
+            error("Price is smaller than or equal to 0");
+            return;
+        }
+        Movie movie = (Movie) sharedData.getMovies().get(movieName);
+        movie.setPrice(price);
+        ack("changeprice " + '"' + movieName + '"' + " success");
+        broadcast("movie " + '"' + movieName + '"' + " " + movie.getAvailableAmount() + " " + movie.getPrice());
+    }
+
+    private void ack(String ans) {
         connections.send(connID, "ACK " + ans);
 
     }
@@ -258,4 +299,4 @@ public class BlockBusterProtocol extends USTBP {
     }
 
 
-    }
+}

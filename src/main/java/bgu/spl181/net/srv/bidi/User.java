@@ -9,25 +9,21 @@ import java.util.List;
 
 public class User {
 
-    @SerializedName("username")
-    @Expose
+
     private String username;
-    @SerializedName("type")
-    @Expose
+
     private String type;
-    @SerializedName("password")
-    @Expose
+
     private String password;
-    @SerializedName("country")
-    @Expose
+
     private String country;
-    @SerializedName("movies")
-    @Expose
+
     private List<MovieUser> movies = null;
-    @SerializedName("balance")
-    @Expose
+
     private String balance;
+
     private boolean isLoggedIn= false;
+
     private int id;
 
     /**
@@ -46,7 +42,7 @@ public class User {
      * @param password
      * @param country
      */
-    public User(String username, String type, String password, String country, List<MovieUser> movies, int balance) {
+    public User(String username, String type, String password, String country, List<MovieUser> movies, String balance) {
         super();
         this.username = username;
         this.type = type;
