@@ -3,6 +3,7 @@ package bgu.spl181.net.srv;
 import bgu.spl181.net.api.MessageEncoderDecoder;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl181.net.api.bidi.ConnectionsImpl;
+import bgu.spl181.net.srv.bidi.BlockBusterProtocol;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -40,16 +41,24 @@ public abstract class BaseServer<T> implements Server<T> {
             while (!Thread.currentThread().isInterrupted()) {
 
                 Socket clientSock = serverSock.accept();
+                BidiMessagingProtocol<T> protocol = protocolFactory.get();
 
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(
                         clientSock,
                         encdecFactory.get(),
-                        protocolFactory.get());
+                        protocol);
+
 
                 current++;
                 connections.add(current, handler);
-                BidiMessagingProtocol BMP = protocolFactory.get();
-                BMP.start(current,connections);
+
+                System.out.println(connections.get().size());
+
+//                BidiMessagingProtocol BMP = protocolFactory.get();
+//                BMP.start(current,connections);
+
+//                BlockBusterProtocol BBP = (BlockBusterProtocol)protocolFactory.get();
+                protocol.start(current,connections);
                 execute(handler);
             }
         } catch (IOException ex) {

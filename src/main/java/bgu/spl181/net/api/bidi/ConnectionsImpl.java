@@ -9,8 +9,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
     private ConcurrentHashMap<Integer, ConnectionHandler> connections = new ConcurrentHashMap();
 
     public boolean send(int connectionId, T msg) {
-        if (!connections.contains(connectionId))
-            return false;
+        if (!connections.containsKey(connectionId)){
+//            System.out.println(connectionId);
+//            System.out.println(connections.get(1));
+//            System.out.println(connections.size());
+            return false;}
         connections.get(connectionId).send(msg);
         return true;
     }

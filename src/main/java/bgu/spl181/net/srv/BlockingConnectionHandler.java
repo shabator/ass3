@@ -36,8 +36,6 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
                     protocol.process(nextMessage);
-                    out.write(encdec.encode(nextMessage));
-                    out.flush();
                 }
             }
 
@@ -54,6 +52,12 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     }
     public void send(T msg)
     {
-
+        try {
+            out.write(encdec.encode(msg));
+            out.flush();
+              }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
