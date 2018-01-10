@@ -31,7 +31,7 @@ public interface Server<T> extends Closeable {
         return new BaseServer<T>(port, protocolFactory, encoderDecoderFactory) {
             @Override
             protected void execute(BlockingConnectionHandler<T> handler) {
-                System.out.println("12");
+//                System.out.println("12");
                 new Thread(handler).start();
             }
         };

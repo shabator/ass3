@@ -51,15 +51,15 @@ public abstract class BaseServer<T> implements Server<T> {
 
                 current++;
                 connections.add(current, handler);
-
-                System.out.println(connections.get().size());
+                protocol.start(current,connections);
+                execute(handler);
+//                System.out.println(connections.get().size());
 
 //                BidiMessagingProtocol BMP = protocolFactory.get();
 //                BMP.start(current,connections);
 
 //                BlockBusterProtocol BBP = (BlockBusterProtocol)protocolFactory.get();
-                protocol.start(current,connections);
-                execute(handler);
+
             }
         } catch (IOException ex) {
         }

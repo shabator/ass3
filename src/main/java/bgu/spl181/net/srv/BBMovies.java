@@ -13,13 +13,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BBMovies extends BBUsers {
 
 
     protected ConcurrentHashMap<String, Movie> movies;
     private int currentMovieId = 0;
-    private ReadWriteLock userLock;
+    private ReadWriteLock userLock = new ReentrantReadWriteLock();
 
 
     public BBMovies(ConcurrentHashMap<String, Movie> movies, ConcurrentHashMap<String, User> users) {
