@@ -31,6 +31,7 @@ public class BlockBusterProtocol extends USTBP {
     private boolean isLogin = false;
     private User thisUser;
     private ReadWriteLock movieLock = new ReentrantReadWriteLock();
+    private boolean shouldTerminate = false;
 
     public BlockBusterProtocol(BBMovies sharedData) {
         this.sharedData = sharedData;
@@ -140,7 +141,7 @@ public class BlockBusterProtocol extends USTBP {
 
     @Override
     public boolean shouldTerminate() {
-        return false;
+        return shouldTerminate;
     }
 
     @Override
@@ -153,20 +154,19 @@ public class BlockBusterProtocol extends USTBP {
             error("Login failed2");
             return;
         }
-        thisUser = (User) sharedData.getUsers().get(userName);
-        if (thisUser.isLoggedIn()) {
+//        boolean currentUser = (boolean)sharedData.getLoggedIN().get(connID);
+        if (sharedData.getLoggedIN().get(connID)!=null) {
             error("Login failed3");
             return;
         }
-
+        thisUser = (User)sharedData.getUsers().get(userName);
         if (!thisUser.getPassword().equals(password)) {
             error("Login failed4");
             return;
         }
 
-        thisUser.setLoggedIn(true);
+        sharedData.addLoggedIN(connID, true);
         isLogin = true;
-        thisUser.setID(connID);
         ack("Login succeeded");
 
     }
@@ -175,10 +175,10 @@ public class BlockBusterProtocol extends USTBP {
     @Override
     public void signOut() {
         if (isLogin) {
-            thisUser.setLoggedIn(false);
+            sharedData.removeloggedIN(connID);
             isLogin = false;
-            thisUser.setID(-1);
             ack("signout succeeded");
+            shouldTerminate = true;
             connections.disconnect(connID);
 
             return;
@@ -213,7 +213,7 @@ public class BlockBusterProtocol extends USTBP {
     }
 
     public void balanceInfo() {
-        if (!thisUser.isLoggedIn()) {
+        if (!isLogin) {
             String ans = "request balance failed";
             error(ans);
         }
@@ -237,7 +237,6 @@ public class BlockBusterProtocol extends USTBP {
 
     public void info(String movieName) {
         String ans = "";
-//        System.out.println(movieName);
         if (movieName == null) {
             for (String movie : (Set<String>) sharedData.getMovies().keySet()) {
                 ans = ans + " " + '"' + movie + '"';
@@ -341,7 +340,6 @@ public class BlockBusterProtocol extends USTBP {
     }
 
     public void addMovie(String movieName, String amount, String price, String blockData) {
-        blockData = blockData.substring(0, blockData.length() - 1);
         movieName = movieName.substring(1, movieName.length() - 2);
         if (!thisUser.getType().equals("admin")) {
             error("User is not an administrator");
@@ -356,31 +354,37 @@ public class BlockBusterProtocol extends USTBP {
             return;
         }
         Integer id = sharedData.getMovies().size() + 1;
-        LinkedList<String> countries = new LinkedList<>();
-        char[] country = blockData.toCharArray();
-        int i = 0;
-        String countryName = "";
-        while (i < country.length - 1) {
-            while (country[i] == '"' || country[i] == ' ') {
-                if (i == country.length - 1) {
-                    break;
-                } else
+        Movie movie = null;
+        if(blockData.length()>1) {
+            blockData = blockData.substring(0, blockData.length() - 1);
+            LinkedList<String> countries = new LinkedList<>();
+            char[] country = blockData.toCharArray();
+            int i = 0;
+            String countryName = "";
+            while (i < country.length - 1) {
+                while (country[i] == '"' || country[i] == ' ') {
+                    if (i == country.length - 1) {
+                        break;
+                    } else
+                        i++;
+                }
+                while (country[i] != '"') {
+                    countryName = countryName + country[i];
                     i++;
+                }
+                if (countryName != "") {
+                    countries.add(countryName);
+                    countryName = "";
+                }
             }
-            while (country[i] != '"') {
-                countryName = countryName + country[i];
-                i++;
+            String[] newCountry = new String[countries.size()];
+            for (int j = 0; j < newCountry.length; j++) {
+                newCountry[j] = countries.remove();
             }
-            if (countryName != "") {
-                countries.add(countryName);
-                countryName = "";
-            }
+            movie = new Movie(id.toString(), movieName, price, newCountry, amount, amount);
         }
-        String[] newCountry = new String[countries.size()];
-        for (int j = 0; j < newCountry.length; j++) {
-            newCountry[j] = countries.remove();
-        }
-        Movie movie = new Movie(id.toString(), movieName, price, newCountry, amount, amount);
+        else
+            movie = new Movie(id.toString(), movieName, price, new String[0], amount, amount);
 
         movieLock.writeLock().lock();
         sharedData.getMovies().put(movie.getName(), movie);
@@ -462,10 +466,9 @@ public class BlockBusterProtocol extends USTBP {
     }
 
     private void broadcast(String ans) {
-        Collection<User> users = sharedData.getUsers().values();
-        for (User user : users) {
-            if (user.isLoggedIn() && user.getID() != -1)
-                connections.send(user.getID(), "BROADCAST " + ans);
+        Collection<Integer> usersLogedIn = sharedData.getLoggedIN().keySet();
+        for (Integer conId : usersLogedIn) {
+                connections.send(conId, "BROADCAST " + ans);
         }
     }
 

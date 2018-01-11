@@ -7,6 +7,7 @@ import bgu.spl181.net.srv.bidi.Users;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
+import javax.swing.text.StyledEditorKit;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ public class BBMovies extends BBUsers {
     protected ConcurrentHashMap<String, Movie> movies;
     private int currentMovieId = 0;
     private ReadWriteLock userLock = new ReentrantReadWriteLock();
+    private ConcurrentHashMap<Integer , Boolean> logginUsers = new ConcurrentHashMap<>();
 
 
     public BBMovies(ConcurrentHashMap<String, Movie> movies, ConcurrentHashMap<String, User> users) {
@@ -31,6 +33,19 @@ public class BBMovies extends BBUsers {
 
     public ConcurrentHashMap getMovies() {
         return movies;
+    }
+
+
+    public ConcurrentHashMap getLoggedIN() {
+        return logginUsers;
+    }
+
+    public void addLoggedIN(int conId, boolean login) {
+        logginUsers.put(conId, login);
+    }
+
+    public void removeloggedIN(int conId) {
+        logginUsers.remove(conId);
     }
 
 

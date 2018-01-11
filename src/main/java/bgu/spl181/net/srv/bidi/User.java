@@ -22,9 +22,6 @@ public class User {
 
     private String balance;
 
-    private boolean isLoggedIn= false;
-
-    private int id;
 
     /**
      * No args constructor for use in serialization
@@ -50,7 +47,7 @@ public class User {
         this.country = country;
         this.movies = movies;
         this.balance = balance;
-        id = -1;
+
     }
 
 
@@ -86,9 +83,7 @@ public class User {
         this.country = country;
     }
 
-    public List<MovieUser> getMovies() {
-        return movies;
-    }
+    public List<MovieUser> getMovies() { return movies; }
 
     public void setMovies(List<MovieUser> movies) {
         this.movies = movies;
@@ -101,20 +96,6 @@ public class User {
     public void setBalance(String balance) {
         this.balance = balance;
     }
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        this.isLoggedIn = loggedIn;
-    }
-
-    public void setID(int ID) {
-        this.id = ID;
-    }
-
-    public int getID() { return id; }
 
 
 }
